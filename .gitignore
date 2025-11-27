@@ -1,0 +1,17 @@
+# Build artifacts
+*.o
+*.a
+*.c
+demo
+bsp_demo
+bsp_crunch
+bsp_viewer
+
+# BSP test files
+*.bsp
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
