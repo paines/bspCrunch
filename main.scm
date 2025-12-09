@@ -18,7 +18,6 @@
 
 (module main (main)
 
-(import (scheme base))
 (import (chicken syntax))                       ; for er-macro-transformer
 (import (crunch c)                              ; for c-external, c-lambda
         (crunch memory)                         ; for string->pointer
@@ -139,5 +138,3 @@
           (DrawText (str "PRESS ENTER or TAP to RETURN to TITLE SCREEN") 120 220 20
             (get-color "DARKBLUE"))))
        (EndDrawing))))
-
-)
