@@ -11,6 +11,9 @@ CHICKEN_LIB := -L/Users/al/chicken/lib -lchicken
 # C++ standard for BSP sources
 CXXFLAGS := -std=c++20
 
+# Chicken-friendly link flags for raylib (-L <flag> per item)
+RAYLIB_L_FLAGS := $(foreach x,$(RAYLIB_LIBS_CHICKEN),-L $(x))
+
 bsp_demo_chicken: bsp_demo_chicken.o raylib_helpers.o bsp_wrapper.o bsp.o
 	$(CXX) -std=c++20 -o $@ bsp_demo_chicken.o raylib_helpers.o bsp_wrapper.o bsp.o \
 	$(RAYLIB_LIBS_CHICKEN) $(CHICKEN_LIB) -Wl,-rpath,/Users/al/chicken/lib
@@ -30,3 +33,14 @@ bsp.o: bsp.cpp
 .PHONY: bsp_demo_chicken run_bsp_chicken
 run_bsp_chicken: bsp_demo_chicken
 	./bsp_demo_chicken
+
+# Build REPL-loadable module for csi
+bsp-viewer.so: bsp_viewer.scm raylib_helpers.o bsp_wrapper.o bsp.o
+	$(CSC) -s -j bsp-viewer -o bsp-viewer.so \
+	  bsp_viewer.scm raylib_helpers.o bsp_wrapper.o bsp.o \
+	  $(RAYLIB_L_FLAGS) -L -lc++
+
+.PHONY: repl
+repl: bsp-viewer.so
+	# Start csi from repo root without DYLD overrides (macOS GL issues)
+	unset DYLD_LIBRARY_PATH; $(CHICKEN_BIN)/csi
