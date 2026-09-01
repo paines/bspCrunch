@@ -9,7 +9,6 @@ bsp_viewer
 
 # BSP test files
 *.bsp
-
 # Editor files
 *.swp
 *.swo

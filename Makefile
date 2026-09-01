@@ -1,12 +1,11 @@
-CHICKEN_BIN ?= /Users/al/chicken/bin
-CSC := $(CHICKEN_BIN)/csc
+CSC := csc
 
 # Homebrew raylib paths
 RAYLIB_INC := $(shell pkg-config --cflags raylib)
 RAYLIB_LIBS_CHICKEN := $(shell pkg-config --libs raylib)
 
 # Chicken runtime lib (adjust if different)
-CHICKEN_LIB := -L/Users/al/chicken/lib -lchicken
+CHICKEN_LIB := -L/opt/homebrew/lib -lchicken
 
 # C++ standard for BSP sources
 CXXFLAGS := -std=c++20
@@ -16,10 +15,10 @@ RAYLIB_L_FLAGS := $(foreach x,$(RAYLIB_LIBS_CHICKEN),-L $(x))
 
 bsp_demo_chicken: bsp_demo_chicken.o raylib_helpers.o bsp_wrapper.o bsp.o
 	$(CXX) -std=c++20 -o $@ bsp_demo_chicken.o raylib_helpers.o bsp_wrapper.o bsp.o \
-	$(RAYLIB_LIBS_CHICKEN) $(CHICKEN_LIB) -Wl,-rpath,/Users/al/chicken/lib
+	$(RAYLIB_LIBS_CHICKEN) $(CHICKEN_LIB) -lc++ -Wl,-rpath
 
 bsp_demo_chicken.o: bsp_demo_chicken.scm
-	$(CSC) -c -O3 $< -o $@
+	$(CSC) -c -O3 $(RAYLIB_INC) $< -o $@
 
 raylib_helpers.o: raylib_helpers.c
 	$(CC) $(RAYLIB_INC) -c -O3 raylib_helpers.c
@@ -43,4 +42,14 @@ bsp-viewer.so: bsp_viewer.scm raylib_helpers.o bsp_wrapper.o bsp.o
 .PHONY: repl
 repl: bsp-viewer.so
 	# Start csi from repo root without DYLD overrides (macOS GL issues)
-	unset DYLD_LIBRARY_PATH; $(CHICKEN_BIN)/csi
+	unset DYLD_LIBRARY_PATH; csi
+
+clean:
+	rm -f bsp_demo_chicken bsp_demo_chicken.o raylib_helpers.o bsp_wrapper.o bsp.o bsp-viewer.so demo
+
+crunch-demo: raylib-example.c bsp_helpers.o bsp_wrapper.o bsp.o
+	gcc -c -I/opt/homebrew/Cellar/chicken/6.0.0/include/chicken -I/opt/homebrew/Cellar/raylib/6.0/include raylib-example.c
+	$(CXX) -std=c++20 -o $@ raylib-example.o bsp_helpers.o bsp_wrapper.o bsp.o -L/opt/homebrew/Cellar/raylib/6.0/lib -lraylib -lc++
+	
+raylib-example.c: bsp_crunch.scm
+	/opt/homebrew/Cellar/chicken/6.0.0/bin/chicken-crunch bsp_crunch.scm -o raylib-example.c

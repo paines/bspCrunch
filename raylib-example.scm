@@ -112,7 +112,7 @@
       (let* ((mousePos (GetMousePosition))
             (windowTitle (string-append "mouse x: "
                          (number->string (get-x mousePos))
-                         " y:" (number->string (get-x mousePos)))))
+                         " y:" (number->string (get-y mousePos)))))
         (SetWindowTitle (str windowTitle)))
 
 
@@ -139,4 +139,5 @@
           (DrawText (str "PRESS ENTER or TAP to RETURN to TITLE SCREEN") 120 220 20
             (get-color "DARKBLUE"))))
        (EndDrawing))))
+
 )

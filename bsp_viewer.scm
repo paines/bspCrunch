@@ -39,6 +39,7 @@
   int   GetBSPModelCount(void* bsp);
   void* GetBSPModel(void* bsp, int index);
   void  UnloadBSPFile(void* bsp);
+  void DrawHUD(void);
   ")
 
   (define InitWindow        (foreign-lambda void "InitWindow" int int c-string))
@@ -59,6 +60,8 @@
   (define GetBSPModel      (foreign-lambda c-pointer "GetBSPModel" c-pointer int))
   (define UnloadBSPFile    (foreign-lambda void "UnloadBSPFile" c-pointer))
   (define DrawModelPtr     (foreign-lambda void "DrawModelPtr" c-pointer))
+
+  (define DrawHUD           (foreign-lambda void "DrawHUD"))
 
   (define (pointer-null? p) (eq? p #f))
 
@@ -112,7 +115,12 @@
                     (EndMode3DWrap)
                     (DrawTextWhite "Chicken FFI BSP Viewer" 10 10 20)
                     (DrawTextWhite (string-append "Models: " (number->string model-count)) 10 40 20)))
-              (EndDrawing)
+                    (EndMode3DWrap)
+(DrawHUD)
+(DrawTextWhite "Chicken FFI BSP Viewer" 10 84 20)
+(DrawTextWhite (string-append "Models: " (number->string model-count)) 10 108 20)
+                (DrawHUD)
+                (EndDrawing)
               #t))))
 
   (define (run)
